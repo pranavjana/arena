@@ -1,0 +1,76 @@
+@import "tailwindcss/index.css";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-nexus-bg: var(--nexus-bg);
+  --color-nexus-elevated: var(--nexus-elevated);
+  --color-nexus-border: var(--nexus-border);
+  --color-nexus-text: var(--nexus-text);
+  --color-nexus-muted: var(--nexus-muted);
+  --color-nexus-accent: var(--nexus-accent);
+  --color-nexus-cyan: var(--nexus-cyan);
+  --color-nexus-cyan-dim: var(--nexus-cyan-dim);
+  --color-nexus-green: var(--nexus-green);
+  --color-nexus-amber: var(--nexus-amber);
+  --color-nexus-red: var(--nexus-red);
+  --color-nexus-purple: var(--nexus-purple);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+:root {
+  --background: #000000;
+  --foreground: #ededed;
+
+  --nexus-bg: #000000;
+  --nexus-elevated: #0a0a0a;
+  --nexus-border: #1a1a1a;
+  --nexus-text: #ededed;
+  --nexus-muted: #666666;
+  --nexus-accent: #ededed;
+  --nexus-cyan: #ededed;
+  --nexus-cyan-dim: #333333;
+  --nexus-green: #22c55e;
+  --nexus-amber: #eab308;
+  --nexus-red: #ef4444;
+  --nexus-purple: #a855f7;
+}
+
+body {
+  background: var(--nexus-bg);
+  color: var(--nexus-text);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Grid background */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--nexus-border);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--nexus-muted);
+}
+
+/* Pulse animation */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
