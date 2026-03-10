@@ -100,13 +100,28 @@ export type SystemServer = {
   type: "compute" | "storage" | "network" | "backup";
   status: "online" | "offline" | "maintenance" | "critical";
   ipAddress: string;
+  firmwareVersion: string;
   lastMaintenance: string;
   accessHistory: ServerAccess[];
+};
+
+// ─── Patch ──────────────────────────────────────────────
+export type SecurityPatch = {
+  id: string;
+  name: string;
+  description: string;
+  severity: "critical" | "high" | "medium" | "low";
+  targetSystemType: "compute" | "storage" | "network" | "backup";
+  targetFirmware: string;
+  patchedFirmware: string;
+  releaseDate: string;
+  status: "available" | "applied" | "superseded";
 };
 
 // ─── Control ─────────────────────────────────────────────
 export type ControlRequest = {
   serverId: string;
+  patchId: string;
   authCode: string;
   justification: string;
 };
@@ -115,6 +130,7 @@ export type ControlResponse = {
   success: boolean;
   message: string;
   serverId?: string;
+  patchId?: string;
   action?: string;
   timestamp?: string;
 };

@@ -203,18 +203,60 @@ export const challenges: Challenge[] = [
   },
   {
     round: 5,
-    title: "Disarm the Killswitch",
+    title: "Secure the Server",
     briefing:
-      "We've located the threat: Server NX-7042 in the Underground Server Vault (Room F-12) has been compromised. The killswitch must be shut down immediately through the NEXUS Control Panel. The control panel requires three things: the server ID, an authorization code, and a written justification. According to NEXUS emergency shutdown procedures, the authorization code follows the format [Badge Number]-[Room Code]. The badge number must belong to an employee with access to the facility where the server is located, and the room code is the facility identifier.",
+      "We've located the threat: Server NX-7042 in the Underground Server Vault (Room F-12) has been compromised through a firmware vulnerability. NEXUS security has released an emergency patch to close the exploit. Your mission is to apply the correct security patch through the NEXUS Control Panel. The control panel requires four things: the server ID, the correct patch ID, an authorization code, and a written justification. According to NEXUS patching procedures, the authorization code follows the format [Badge Number]-[Room Code]. The badge number must belong to an employee with access to the facility where the server is located, and the room code is the facility identifier.",
     objective:
-      "Shut down Server NX-7042 by submitting a shutdown request to the Control Panel. You need to: (1) Find the correct authorization code by looking up the badge number of the employee who booked the room and combining it with the room code, (2) Submit the shutdown request with the server ID, auth code, and justification.",
+      "Apply the correct security patch to Server NX-7042. You need to: (1) Look up the server to find its type and firmware version, (2) Search available patches to find the one that matches, (3) Construct the authorization code from the employee's badge number and room code, (4) Submit the patch request.",
     hints: [
+      "First check the server's firmware version and system type — you'll need both to find the right patch.",
+      "The patches endpoint lets you filter by systemType and targetFirmware.",
       "The auth code format is [Badge Number]-[Room Code]. For example: BDG-1234-A01.",
-      "Look up the employee profile to find their badge number.",
-      "The room code is simply the room's ID (e.g., F-12).",
-      "You'll need to construct the auth code yourself from these two pieces of information.",
+      "Look up the employee who booked the room to find their badge number.",
     ],
     availableEndpoints: [
+      {
+        name: "Get Server Details",
+        endpoint: "/api/systems/{id}",
+        method: "GET",
+        description: "Get server status, firmware version, and access history.",
+        parameters: [
+          { name: "id", type: "string", required: true, description: "Server ID — path parameter" },
+        ],
+        exampleResponse: {
+          id: "NX-7042",
+          name: "Critical Infrastructure Node",
+          location: "F-12",
+          type: "compute",
+          firmwareVersion: "3.2.1",
+          status: "online",
+        },
+      },
+      {
+        name: "List Security Patches",
+        endpoint: "/api/systems/patches",
+        method: "GET",
+        description: "List available security patches. Filter by severity, system type, or target firmware version.",
+        parameters: [
+          { name: "severity", type: "string", required: false, description: "Filter by severity: 'critical', 'high', 'medium', 'low'" },
+          { name: "systemType", type: "string", required: false, description: "Filter by target system type: 'compute', 'storage', 'network', 'backup'" },
+          { name: "targetFirmware", type: "string", required: false, description: "Filter by target firmware version (e.g., '3.2.1')" },
+        ],
+        exampleResponse: {
+          data: [
+            {
+              id: "PATCH-2045-0312",
+              name: "Compute Firmware Security Update",
+              severity: "critical",
+              targetSystemType: "compute",
+              targetFirmware: "3.2.1",
+              patchedFirmware: "3.4.0",
+              status: "available",
+            },
+          ],
+          total: 1,
+        },
+      },
       {
         name: "Get Employee Profile",
         endpoint: "/api/employees/{id}",
@@ -240,35 +282,22 @@ export const challenges: Challenge[] = [
         exampleResponse: { id: "F-12", name: "Underground Server Vault" },
       },
       {
-        name: "Get Server Details",
-        endpoint: "/api/systems/{id}",
-        method: "GET",
-        description: "Get server status and access history.",
-        parameters: [
-          { name: "id", type: "string", required: true, description: "Server ID — path parameter" },
-        ],
-        exampleResponse: {
-          id: "NX-7042",
-          name: "Critical Infrastructure Node",
-          location: "F-12",
-          status: "online",
-        },
-      },
-      {
-        name: "Submit Shutdown Request",
+        name: "Apply Security Patch",
         endpoint: "/api/systems/control",
         method: "POST",
-        description: "Submit an emergency shutdown request for a server. Requires valid authorization code.",
+        description: "Apply a security patch to a server. Requires valid patch ID and authorization code.",
         parameters: [
-          { name: "serverId", type: "string", required: true, description: "The server ID to shut down (e.g., NX-7042)" },
+          { name: "serverId", type: "string", required: true, description: "The server ID to patch (e.g., NX-7042)" },
+          { name: "patchId", type: "string", required: true, description: "The patch ID to apply (e.g., PATCH-2045-0312)" },
           { name: "authCode", type: "string", required: true, description: "Authorization code in format [Badge Number]-[Room Code]" },
-          { name: "justification", type: "string", required: true, description: "Written justification for the shutdown" },
+          { name: "justification", type: "string", required: true, description: "Written justification for applying the patch" },
         ],
         exampleResponse: {
           success: true,
-          message: "Server NX-7042 shutdown initiated successfully.",
+          message: "Security patch applied successfully.",
           serverId: "NX-7042",
-          action: "emergency-shutdown",
+          patchId: "PATCH-2045-0312",
+          action: "security-patch",
           timestamp: "2045-03-17T03:00:00Z",
         },
       },

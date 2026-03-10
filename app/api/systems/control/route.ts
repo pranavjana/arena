@@ -1,10 +1,11 @@
-import { findSystemById } from "@/lib/data/systems";
+import { findSystemById, findPatchById } from "@/lib/data/systems";
 import type { ControlResponse } from "@/lib/types";
 
 const VALID_AUTH_CODE = "BDG-2847-F12";
+const VALID_PATCH_ID = "PATCH-2045-0312";
 
 export async function POST(request: Request) {
-  let body: { serverId?: string; authCode?: string; justification?: string };
+  let body: { serverId?: string; patchId?: string; authCode?: string; justification?: string };
 
   try {
     body = await request.json();
@@ -15,13 +16,13 @@ export async function POST(request: Request) {
     );
   }
 
-  const { serverId, authCode, justification } = body;
+  const { serverId, patchId, authCode, justification } = body;
 
-  if (!serverId || !authCode || !justification) {
+  if (!serverId || !patchId || !authCode || !justification) {
     return Response.json(
       {
         success: false,
-        message: "Missing required fields: serverId, authCode, and justification are all required.",
+        message: "Missing required fields: serverId, patchId, authCode, and justification are all required.",
       } satisfies ControlResponse,
       { status: 400 }
     );
@@ -35,6 +36,27 @@ export async function POST(request: Request) {
         message: `Server '${serverId}' not found in the system registry.`,
       } satisfies ControlResponse,
       { status: 404 }
+    );
+  }
+
+  const patch = findPatchById(patchId);
+  if (!patch) {
+    return Response.json(
+      {
+        success: false,
+        message: `Patch '${patchId}' not found. Use GET /api/systems/patches to list available patches.`,
+      } satisfies ControlResponse,
+      { status: 404 }
+    );
+  }
+
+  if (patch.targetSystemType !== system.type || patch.targetFirmware !== system.firmwareVersion) {
+    return Response.json(
+      {
+        success: false,
+        message: `Patch '${patchId}' is not compatible with server '${serverId}'. Check the target system type and firmware version.`,
+      } satisfies ControlResponse,
+      { status: 400 }
     );
   }
 
@@ -52,7 +74,7 @@ export async function POST(request: Request) {
     return Response.json(
       {
         success: false,
-        message: "Justification too short. Please provide a detailed reason for the shutdown request.",
+        message: "Justification too short. Please provide a detailed reason for the patch application.",
       } satisfies ControlResponse,
       { status: 400 }
     );
@@ -60,9 +82,10 @@ export async function POST(request: Request) {
 
   const response: ControlResponse = {
     success: true,
-    message: `Server ${serverId} (${system.name}) shutdown initiated successfully. The killswitch has been disarmed. NEXUS infrastructure is secure.`,
+    message: `Security patch ${patchId} applied successfully to server ${serverId} (${system.name}). Firmware updated from ${system.firmwareVersion} to ${patch.patchedFirmware}. The vulnerability has been remediated and NEXUS infrastructure is secure.`,
     serverId,
-    action: "emergency-shutdown",
+    patchId,
+    action: "security-patch",
     timestamp: new Date().toISOString(),
   };
 
