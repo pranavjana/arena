@@ -1,7 +1,7 @@
 import { findSystemById, findPatchById } from "@/lib/data/systems";
 import type { ControlResponse } from "@/lib/types";
 
-const VALID_AUTH_CODE = "BDG-2847-F12";
+const VALID_AUTH_CODES = ["BDG-2847-F12", "BDG-2847-F-12"];
 const VALID_PATCH_ID = "PATCH-2045-0312";
 
 export async function POST(request: Request) {
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
     );
   }
 
-  if (authCode !== VALID_AUTH_CODE) {
+  if (!VALID_AUTH_CODES.includes(authCode)) {
     return Response.json(
       {
         success: false,
