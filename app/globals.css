@@ -20,12 +20,12 @@
 }
 
 :root {
-  --background: #000000;
+  --background: #1a1a1a;
   --foreground: #ededed;
 
-  --nexus-bg: #000000;
-  --nexus-elevated: #0a0a0a;
-  --nexus-border: #1a1a1a;
+  --nexus-bg: #1a1a1a;
+  --nexus-elevated: #222222;
+  --nexus-border: #2e2e2e;
   --nexus-text: #ededed;
   --nexus-muted: #666666;
   --nexus-accent: #ededed;

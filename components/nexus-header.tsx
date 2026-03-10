@@ -8,6 +8,7 @@ const navLinks = [
   { href: "/communications", label: "Comms" },
   { href: "/facilities", label: "Facilities" },
   { href: "/systems", label: "Systems" },
+  { href: "/docs", label: "Docs" },
 ];
 
 export function NexusHeader() {
