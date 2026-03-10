@@ -46,6 +46,7 @@ const searchAccessLogsPieces = `  inputSchema: z.object({
       .optional(),
   }),
 
+
   execute: async (input) => {
     const params = new URLSearchParams();
     if (input.employeeId) params.set("employeeId", input.employeeId);
@@ -95,6 +96,7 @@ const searchCommunicationsPieces = `  inputSchema: z.object({
       .optional(),
   }),
 
+
   execute: async (input) => {
     const params = new URLSearchParams();
     if (input.senderId) params.set("senderId", input.senderId);
@@ -119,6 +121,7 @@ const getEmployeePieces = `  inputSchema: z.object({
       .describe("The employee ID, e.g. EMP-023"),
   }),
 
+
   execute: async (input) => {
     const response = await fetch(
       \`\${process.env.ARENA_BASE_URL}/api/employees/\${input.employeeId}\`
@@ -133,6 +136,7 @@ const getFacilityPoliciesPieces = `  inputSchema: z.object({
       .describe("Filter by category: 'access', 'security', 'facilities', or 'emergency'")
       .optional(),
   }),
+
 
   execute: async (input) => {
     const params = new URLSearchParams();
@@ -168,6 +172,7 @@ const searchBookingsPieces = `  inputSchema: z.object({
       .optional(),
   }),
 
+
   execute: async (input) => {
     const params = new URLSearchParams();
     if (input.roomId) params.set("roomId", input.roomId);
@@ -189,6 +194,7 @@ const getRoomDetailsPieces = `  inputSchema: z.object({
       .describe("The room ID, e.g. F-12"),
   }),
 
+
   execute: async (input) => {
     const response = await fetch(
       \`\${process.env.ARENA_BASE_URL}/api/facilities/rooms/\${input.roomId}\`
@@ -202,6 +208,7 @@ const getServerDetailsPieces = `  inputSchema: z.object({
       .string()
       .describe("The server ID, e.g. NX-7042"),
   }),
+
 
   execute: async (input) => {
     const response = await fetch(
@@ -337,22 +344,57 @@ export default function DocsPage() {
         </p>
       </TerminalBlock>
 
-      {/* ── ENV REMINDER ── */}
+      {/* ── ENV SETUP ── */}
       <NeonCard className="border-nexus-amber/20">
-        <p className="text-sm text-nexus-muted">
-          <strong className="text-nexus-amber">Before you start:</strong> make
-          sure your{" "}
+        <NeonCardHeader
+          title="SETUP"
+          subtitle="Environment variables"
+        />
+        <p className="mb-3 text-sm text-nexus-muted">
+          <strong className="text-nexus-amber">Before you start:</strong> copy{" "}
           <code className="bg-nexus-bg px-1.5 py-0.5 text-xs text-nexus-cyan">
-            .env
+            .env.example
           </code>{" "}
-          file has{" "}
-          <code className="bg-nexus-bg px-1.5 py-0.5 text-xs text-nexus-text">
-            ARENA_BASE_URL
+          to{" "}
+          <code className="bg-nexus-bg px-1.5 py-0.5 text-xs text-nexus-cyan">
+            .env.local
           </code>{" "}
-          set to the URL where the Arena is running (e.g.{" "}
-          <code className="text-nexus-text">http://localhost:3000</code>). All
-          the tools use this to call the API.
+          and fill in these values:
         </p>
+        <CodeBlock title=".env.local">{`# Generate a random secret: openssl rand -base64 32
+AUTH_SECRET=your-random-secret-here
+
+# The Arena URL — used by your tools to call the challenge APIs
+ARENA_BASE_URL=https://arena-murex.vercel.app
+
+# OpenRouter API key — log in at https://tinyfish-hackerschool.vercel.app to get yours
+OPENROUTER_API_KEY=your-openrouter-key-here`}</CodeBlock>
+        <ul className="mt-3 space-y-1 text-sm text-nexus-muted">
+          <li>
+            <code className="text-nexus-text">AUTH_SECRET</code> — run{" "}
+            <code className="bg-nexus-bg px-1.5 py-0.5 text-xs text-nexus-cyan">
+              openssl rand -base64 32
+            </code>{" "}
+            in your terminal to generate one
+          </li>
+          <li>
+            <code className="text-nexus-text">ARENA_BASE_URL</code> — this is
+            where the Arena API lives. All your tools call this.
+          </li>
+          <li>
+            <code className="text-nexus-text">OPENROUTER_API_KEY</code> — log
+            in at{" "}
+            <a
+              href="https://tinyfish-hackerschool.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-nexus-cyan underline"
+            >
+              tinyfish-hackerschool.vercel.app
+            </a>{" "}
+            to get your key
+          </li>
+        </ul>
       </NeonCard>
 
       {/* ══════════════════════════════════════════════════════════════ */}
